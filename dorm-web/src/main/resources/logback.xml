@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <!-- 定义相关变量 -->
+    <property name="appName" value="supplier"/>
+    <property name="logHome" value="/data/tomcat/applogs/supplier"/>
+
+    <!-- 开发过程中使用，将日志输出到控制台，用于生产时要关闭 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout>
+            <Pattern>[%date][%thread][%level][%X{THREAD_ID}][%X{USER_NAME}][%logger:%L]-${appName}|%msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <!-- 用于记录排障使用的系统日志，在日志中需要输出用户的操作轨迹与系统处理轨迹，应当记录INFO及以上级别的日志 -->
+    <appender name="SYS_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 是否继续上次内容进行输出 -->
+        <append>true</append>
+        <!-- 定义当前输出文件路径 -->
+        <file>${logHome}/${appName}_info.log</file>
+        <!-- 定义日志文件的滚动方式是按天的方式进行备份 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logHome}/${appName}_info.log.%d{yyyyMMdd}</FileNamePattern>
+            <!-- 定义保留备份文件个数 -->
+            <MaxHistory>1000</MaxHistory>
+        </rollingPolicy>
+        <!-- 格式化输出 -->
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}][%thread][%-5level][%X{THREAD_ID}][%X{USER_NAME}][%logger{80}:%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- 用于记录系统运行过程中所有产生的ERROR级别的日志，且只记录ERROR级别 -->
+    <appender name="SYS_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logHome}/${appName}_error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logHome}/${appName}_error.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>1000</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}][%thread][%-5level][%X{THREAD_ID}][%X{USER_NAME}][%logger{80}:%L]- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 指定某个记录器、包、类的日志级别 -->
+    <logger name="com.ttylink.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="SYS_INFO" />
+        <appender-ref ref="SYS_ERROR" />
+    </logger>
+
+    <!-- sqlSession sql -->
+    <logger name="com.ttylink.dao" level="DEBUG"/>
+
+    <!-- 指定根记录器 -->
+    <root>
+        <!-- 指定跟记录器级别，生产环境使用ERROR，针对需要调整进行单独指定 -->
+        <level value="info"/>
+        <!-- 作用于生产时需要删除CONSOLE的记录器 -->
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="SYS_INFO" />
+        <appender-ref ref="SYS_ERROR" />
+    </root>
+</configuration>
