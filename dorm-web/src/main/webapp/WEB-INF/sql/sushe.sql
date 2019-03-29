@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50722
 File Encoding         : 65001
 
-Date: 2019-03-28 18:32:20
+Date: 2019-03-29 19:10:17
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -159,6 +159,29 @@ CREATE TABLE `m_user` (
   PRIMARY KEY (`DB_ID`),
   UNIQUE KEY `USER_NAME` (`NICK_NAME`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='系统用户表';
+
+-- ----------------------------
+-- Table structure for notice
+-- ----------------------------
+DROP TABLE IF EXISTS `notice`;
+CREATE TABLE `notice` (
+  `DB_ID` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `TITLE` varchar(32) DEFAULT NULL COMMENT '标题',
+  `CONTENT` varchar(512) DEFAULT NULL COMMENT '信消息内容',
+  `IMAGE` varchar(50) DEFAULT NULL COMMENT '消息图片',
+  `SEND_NUM` int(11) DEFAULT NULL COMMENT '发送次数',
+  `SEND_TYPE` int(1) DEFAULT '0' COMMENT '发送类型 0：站内信 1：短信 2：邮件',
+  `NOTICE_STATE` int(11) DEFAULT '0' COMMENT '消息状态 已读=1 未读=0',
+  `SEND_STATUS` int(8) DEFAULT '1' COMMENT '发送状态 1；成功 0：失败',
+  `CREATE_TIME` timestamp NULL DEFAULT NULL COMMENT '创建时间',
+  `CREATE_USER` varchar(32) DEFAULT NULL COMMENT '创建人',
+  `UPDATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `UPDATE_USER` varchar(32) DEFAULT NULL COMMENT '修改人',
+  `DEL_FLAG` int(1) DEFAULT '1' COMMENT '删除标志',
+  PRIMARY KEY (`DB_ID`),
+  KEY `p_notice_index_0` (`NOTICE_STATE`),
+  KEY `rds_idx_1` (`NOTICE_STATE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='通知消息表';
 
 -- ----------------------------
 -- Table structure for student
